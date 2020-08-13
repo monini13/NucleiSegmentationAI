@@ -8,16 +8,44 @@ import matplotlib.pyplot as plt
 
 
 def dice(pred,targ,smooth=1/1e32):
+    """
+    Args:
+    pred (tensor): output tensor from model of shape (N,C,H,W)
+    targ (tensor): target tensor of shape (N,C,H,W)
+    smooth (float): smoothing value for cases when denominator is 0
+
+    Returns:
+    score (tensor): tensor containing dice score for each channel
+    """
     intersection = (pred * targ).sum(dim=2).sum(dim=2)
     score = (2. * intersection + smooth) / (pred.sum(dim=2).sum(dim=2) + targ.sum(dim=2).sum(dim=2) + smooth)
     return score
 
 def jaccard(pred,targ,smooth=1/1e32):
+    """
+    Args:
+    pred (tensor): output tensor from model of shape (N,C,H,W)
+    targ (tensor): target tensor of shape (N,C,H,W)
+    smooth (float): smoothing value for cases when denominator is 0
+
+    Returns:
+    score (tensor): tensor containing jaccard score for each channel
+    """
     intersection = (pred * targ).sum(dim=2).sum(dim=2)
     score = (intersection + smooth) / (pred.sum(dim=2).sum(dim=2) + targ.sum(dim=2).sum(dim=2) - intersection + smooth)
     return score
 
 def eval(model, test_loader, thresholds = (0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95)):
+    """
+    Args:
+    model: model to predict output mask
+    test_loader (DataLoader): Pytorch Dataloader containing the test images and test mask
+    thresholds (array(floats)): thresholds to predict whether a pixel belongs a nuclei or not
+
+    Returns:
+    avg_dice_score (tensor): tensor containing average dice score for each channel
+    avg_jaccard_score (tensor): tensor containing average jaccard score for each channel
+    """
     model.eval()
 
     for i, (inputs, masks) in enumerate(test_loader):
@@ -72,8 +100,8 @@ if __name__ == "__main__":
     dice_score,jaccard_score = eval(model,test_loader)
     
 
-    print("dice:\t",dice_score.numpy()[0], " \tmean:",dice_score.mean().item())            # RGB
-    print("jaccard:",jaccard_score.numpy()[0], " \tmean:",jaccard_score.mean().item())      # RGB
+    print("dice:\t",dice_score.numpy()[0], " \tmean:",dice_score.mean().item())            # RGB, mean
+    print("jaccard:",jaccard_score.numpy()[0], " \tmean:",jaccard_score.mean().item())     # RGB, mean
 
 
 
