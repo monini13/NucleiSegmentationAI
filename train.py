@@ -55,17 +55,6 @@ def train_model(model, optimizer, scheduler, device, num_epochs=25):
         loss /= len(train_loader)
         print("epoch loss:",loss)
         loss_ls.append(loss)
-        
-        # if (epoch+1)%5==0:
-        #     print("\n","Input Image")
-        #     plt.imshow(reverse_transform(inputs.to('cpu').detach()[0]))
-        #     plt.show()
-        #     print("Predicted Mask Sigmoid")
-        #     plt.imshow(torch.sigmoid(outputs).to('cpu').detach().numpy()[0].transpose((1,2,0)))
-        #     plt.show()
-        #     print("Actual Mask")
-        #     plt.imshow(masks.to('cpu').detach().numpy()[0].transpose((1,2,0)))
-        #     plt.show()
             
         time_elapsed = time.time() - since
         print('{:.0f}m {:.0f}s'.format(time_elapsed // 60, time_elapsed % 60),"\n")
@@ -95,7 +84,7 @@ if __name__ == "__main__":
     # train
     optimizer_ft = optim.Adam(filter(lambda p: p.requires_grad, model.parameters()), lr=1e-4)
     exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=15, gamma=0.1)
-    loss_ls = train_model(model, optimizer_ft, exp_lr_scheduler, device,num_epochs=30)
+    loss_ls = train_model(model, optimizer_ft, exp_lr_scheduler, device,num_epochs=45)
 
     # testloader
     label_path = "./Test/Labels/"
@@ -109,3 +98,9 @@ if __name__ == "__main__":
 
     print("dice:\t",dice_score.numpy()[0], " \tmean:",dice_score.mean().item())            # RGB, mean
     print("jaccard:",jaccard_score.numpy()[0], " \tmean:",jaccard_score.mean().item())     # RGB, mean
+
+    plt.plot(range(len(loss_ls)),loss_ls,label="Training Loss")
+    plt.xlabel("Epochs")
+    plt.ylabel("Training Loss")
+    plt.legend()
+    plt.show()
