@@ -35,12 +35,13 @@ def jaccard(pred,targ,smooth=1/1e32):
     score = (intersection + smooth) / (pred.sum(dim=2).sum(dim=2) + targ.sum(dim=2).sum(dim=2) - intersection + smooth)
     return score
 
-def eval(model, test_loader, thresholds = (0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95)):
+def eval(model, test_loader, device, thresholds = (0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95)):
     """
     Args:
     model: model to predict output mask
     test_loader (DataLoader): Pytorch Dataloader containing the test images and test mask
     thresholds (array(floats)): thresholds to predict whether a pixel belongs a nuclei or not
+    device: pytorch device of cuda or cpu
 
     Returns:
     avg_dice_score (tensor): tensor containing average dice score for each channel
@@ -97,7 +98,7 @@ if __name__ == "__main__":
     test_set = NucleiDataset(img_path,label_path, transform = trans)
     test_loader = DataLoader(test_set, batch_size=1, shuffle=True, num_workers=1)
 
-    dice_score,jaccard_score = eval(model,test_loader)
+    dice_score,jaccard_score = eval(model,test_loader, device)
     
 
     print("dice:\t",dice_score.numpy()[0], " \tmean:",dice_score.mean().item())            # RGB, mean

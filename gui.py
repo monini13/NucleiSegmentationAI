@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 class Window(Frame):
-    def __init__(self, master=None):
+    def __init__(self, weights_path, master=None):
         Frame.__init__(self, master)
         self.master = master
         self.pos = []
@@ -25,6 +25,7 @@ class Window(Frame):
         self.canvas.pack(fill=tk.BOTH, expand=True)
         self.image = None
         self.image2 = None
+        self.weights_path = weights_path
         
         frm = Frame(self.master)
         frm.pack(side=BOTTOM, padx=15, pady=15)
@@ -42,7 +43,7 @@ class Window(Frame):
         if not img:
             return
         #feed input into model here, output into ./result.png
-        self.predicted_mask = predict("./weights_3channel_dropout_1",img)  # PIL Image
+        self.predicted_mask = predict(self.weights_path,img)  # PIL Image
         base_name = os.path.basename(filename)
         base_name = os.path.splitext(base_name)[0]
         labels_list = os.listdir('./Test/Labels')
@@ -83,12 +84,10 @@ class Window(Frame):
                     text="Predicted Mask")
 
 
-root = tk.Tk()
-root.title("Nuclei Segmentation")
-root.geometry('600x400')
-app = Window(root)
-
-
-root.mainloop()
-
-
+if __name__ == "__main__":
+    root = tk.Tk()
+    root.title("Nuclei Segmentation")
+    root.geometry('1280x600')
+    weights_path = "./weights_3channel_dropout_1"
+    app = Window(weights_path,root)
+    root.mainloop()
