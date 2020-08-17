@@ -33,7 +33,7 @@ def predict(weights_path,img):
 
     num_class = 3
     model = ResNetUNet(num_class).to(device)
-    model.load_state_dict(torch.load(weights_path))
+    model.load_state_dict(torch.load(weights_path, map_location=torch.device('cpu')))
     model.eval()
 
 
@@ -56,7 +56,7 @@ def get_actual_mask(label):
     mask (np.array): shape 1024x1024x3 image array of ground truth mask
     """
 
-    mask = np.pad((label['type_map']==1).astype(int),12)
+    mask = np.pad((label['type_map']==1).astype(int) + (label['type_map']==2).astype(int),12)
     mask = mask[:, :, None]
     temp = np.pad((label['type_map']==3).astype(int) + (label['type_map']==4).astype(int),12)[:, :, None]
     mask = np.concatenate((mask,temp),axis=2)
