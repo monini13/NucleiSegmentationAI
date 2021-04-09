@@ -32,8 +32,9 @@ def predict(weights_path,img):
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     num_class = 3
-    model = ResNetUNet(num_class).to(device)
-    model.load_state_dict(torch.load(weights_path, map_location=torch.device('cpu')))
+    model = ResNetUNet(num_class)
+    model.load_state_dict(torch.load(weights_path,map_location=torch.device('cpu')))
+    model.to(device)
     model.eval()
 
 
